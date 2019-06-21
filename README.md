@@ -16,7 +16,7 @@ To get started you need the following:
 When you have made changes to slides or screens you might want to run `make run-gulp`
 again.
 
-After reset the site will be available at https://admin.reload-os2display.docker
+After reset the site will be available at https://admin.kff-os2display.docker
 
 ## NFS
 Docker For Mac is notoriously slow when it comes to "bind" mounts. In order to support this better the setup supports mounting the code-base via NFS with two caveats.
