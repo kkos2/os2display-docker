@@ -34,7 +34,7 @@ services:
   # It will get admin-release mounted as the first container, and copy the
   # release into it.
   admin_release:
-    image: ${MAIN_IMAGE_REPOSITORY}/os2display-admin-release:${ADMIN_RELEASE_TAG}
+    image: ${PROJECT_IMAGE_REPOSITORY}/admin-release:${ADMIN_RELEASE_TAG}
     volumes:
       - admin-release:/release
     command: /opt/init-copy-source.sh

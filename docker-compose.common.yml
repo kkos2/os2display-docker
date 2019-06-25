@@ -99,7 +99,7 @@ services:
   # to know that the container needs to be removed when we switch from release-
   # to dev-mode.
   admin_release:
-    image: ${PROJECT_IMAGE_REPOSITORY}/os2display-admin-release:${ADMIN_RELEASE_TAG}
+    image: ${PROJECT_IMAGE_REPOSITORY}/admin-release:${ADMIN_RELEASE_TAG}
 
 volumes:
   es-data:
