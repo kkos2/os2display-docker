@@ -6,14 +6,6 @@ normal=$(tput sgr0)
 
 cd /var/www/admin
 
-# Release-builds has a populated vendor-folder, so no need to do an install.
-if [[ ! -f /var/www/admin/.release ]]; then
-  echo "Live source mount - doing a composer install"
-  gosu www-data composer install
-else
-  echo "Release-build detected, skipping composer install"
-fi
-
 # Set ownership and permissions if we don't have write-permission.
 # We do this a bit more careful in order to support the situation where the
 # codebase is mounted via nfs that will show a "wrong" ownership, still allow
@@ -31,9 +23,17 @@ function ensure_writable {
   fi
 }
 
-for TEST_PATH in app/cache app/log web/uploads web/uploads/media var; do
+for TEST_PATH in web/uploads web/uploads/media /var/symfony; do
   ensure_writable "${TEST_PATH}"
 done
+
+# Release-builds has a populated vendor-folder, so no need to do an install.
+if [[ ! -f /var/www/admin/.release ]]; then
+  echo "Live source mount - doing a composer install"
+  gosu www-data composer install
+else
+  echo "Release-build detected, skipping composer install"
+fi
 
 gosu www-data /opt/development/scripts/console.sh doctrine:migrations:migrate --no-interaction
 gosu www-data /opt/development/scripts/console.sh os2display:core:templates:load
