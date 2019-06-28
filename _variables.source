@@ -1,6 +1,6 @@
 # Various variables used during build and local docker-supported development.
 MAIN_IMAGE_REPOSITORY=reload
-PROJECT_IMAGE_REPOSITORY=kkos2display
+PROJECT_IMAGE_REPOSITORY=eu.gcr.io/os2display-kff
 
 DOCKER_BASE_DOMAIN=kff-os2display.docker
 
@@ -17,7 +17,7 @@ ADMIN_NGINX_BUILD_TAG=reload-0.1.0
 # As a rule of thumb you should always bump the build tag if you intent to
 # push a new version of the image regardless of whether you've also bumped the
 # source-tag.
-ADMIN_PHP_BUILD_TAG=reload-1.2.0
+ADMIN_PHP_BUILD_TAG=reload-2.1.0
 
 # Core os2display projects, the tags follow the version projects.
 # We still add a "build" tag to have something to increment if a change is made
@@ -41,4 +41,4 @@ REDIS_BUILD_TAG=reload-0.1.0
 # This tag is used to determine which tag to build when make build-release is
 # run. It is also used by docker-compose when in release mode (see reset-release
 # in the Makefile).
-ADMIN_RELEASE_TAG=kff-build-15
+ADMIN_RELEASE_TAG=kk-develop-2911
