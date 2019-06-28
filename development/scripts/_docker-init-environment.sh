@@ -27,6 +27,8 @@ for TEST_PATH in web/uploads web/uploads/media /var/symfony; do
   ensure_writable "${TEST_PATH}"
 done
 
+rm -fr /var/symfony/cache
+
 # Release-builds has a populated vendor-folder, so no need to do an install.
 if [[ ! -f /var/www/admin/.release ]]; then
   echo "Live source mount - doing a composer install"
