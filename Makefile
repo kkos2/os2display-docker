@@ -48,8 +48,8 @@ clone-admin: ## Do an initial clone of the admin repo.
 # Add this make-target if you have a custom bundle you want to run gulp against.
 run-gulp:
 	docker run \
-		-v $(PWD)/development/admin/src/kkos2-display-bundle/:/app \
-		-w /app \
+		-v $(PWD)/development/admin:/app \
+		-w /app/src/kkos2-display-bundle \
 		node:8.16.0-slim \
 		sh -c "yarn && yarn run gulp"
 
