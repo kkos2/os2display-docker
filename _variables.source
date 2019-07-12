@@ -41,4 +41,4 @@ REDIS_BUILD_TAG=reload-0.1.0
 # This tag is used to determine which tag to build when make build-release is
 # run. It is also used by docker-compose when in release mode (see reset-release
 # in the Makefile).
-ADMIN_RELEASE_TAG=kk-develop-2911
+ADMIN_RELEASE_TAG=kk-develop-2916
