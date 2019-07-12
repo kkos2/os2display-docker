@@ -28,6 +28,12 @@ services:
       - ./development/config/admin/parameters.yml:/var/www/admin/app/config/parameters.yml
       - ./development/scripts:/opt/development/scripts
 
+  admin-php-metrics:
+    image: hipages/php-fpm_exporter:1
+    environment:
+      PHP_FPM_SCRAPE_URI: "tcp://admin-php:9000/fpm-status"
+      VIRTUAL_HOST: admin-metrics.${DOCKER_BASE_DOMAIN}
+
   admin-cron:
     image: ${MAIN_IMAGE_REPOSITORY}/os2display-admin-php:${ADMIN_PHP_BUILD_TAG}
     volumes:
