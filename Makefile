@@ -46,12 +46,12 @@ clone-admin: ## Do an initial clone of the admin repo.
 	git clone --branch=kk-develop  git@github.com:kkos2/os2display-admin.git development/admin
 
 # Add this make-target if you have a custom bundle you want to run gulp against.
-# run-gulp:
-# 	docker run \
-# 		-v $(PWD)/development/admin/src/my-custom-bundle/:/app \
-# 		-w /app \
-# 		node:8.16.0-slim \
-# 		sh -c "yarn && yarn run gulp"
+run-gulp:
+	docker run \
+		-v $(PWD)/development/admin/src/kkos2-display-bundle/:/app \
+		-w /app \
+		node:8.16.0-slim \
+		sh -c "yarn && yarn run gulp"
 
 ifeq (,$(wildcard ./docker-compose.override.yml))
     dc_override =
