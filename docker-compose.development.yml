@@ -16,6 +16,7 @@ services:
 
   admin-cron:
     environment:
+      PHP_IDE_CONFIG: "serverName=cron.${DOCKER_BASE_DOMAIN}"
       SYMFONY_ENV: "dev"
       SYMFONY_DEBUG: "1"
 
