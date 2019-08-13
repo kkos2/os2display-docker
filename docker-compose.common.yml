@@ -25,8 +25,9 @@ services:
       - admin-release:/var/www
       - admin-uploads:/var/www/admin/web/uploads
       - symfony-cache:/var/symfony
-      - ./development/config/admin/parameters.yml:/var/www/admin/app/config/parameters.yml
+      - ./development/admin/docker/parameters.yml:/var/www/admin/app/config/parameters.yml
       - ./development/scripts:/opt/development/scripts
+      - ./development/state-import:/opt/development/state-import
 
   admin-php-metrics:
     image: hipages/php-fpm_exporter:1
@@ -40,7 +41,7 @@ services:
       - admin-release:/var/www
       - admin-uploads:/var/www/admin/web/uploads
       - symfony-cache:/var/symfony
-      - ./development/config/admin/parameters.yml:/var/www/admin/app/config/parameters.yml
+      - ./development/admin/docker/parameters.yml:/var/www/admin/app/config/parameters.yml
       - ./development/scripts:/opt/development/scripts
     command: jobber-entrypoint.sh
 
@@ -75,7 +76,7 @@ services:
     ports:
       - 80
     volumes:
-      - './development/config/screen/config.js:/var/www/screen/app/config.js'
+      - './development/admin/docker/screen-config.js:/var/www/screen/app/config.js'
     environment:
       VIRTUAL_HOST: screen.${DOCKER_BASE_DOMAIN}
     # We proxy these so need them to exist.
@@ -92,6 +93,7 @@ services:
       MYSQL_PASSWORD: os2display
     volumes:
       - db-data:/var/lib/mysql
+      - ${DB_DUMP}
 
   mailhog:
     image: mailhog/mailhog

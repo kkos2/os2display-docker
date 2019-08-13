@@ -27,8 +27,6 @@ for TEST_PATH in web/uploads web/uploads/media /var/symfony; do
   ensure_writable "${TEST_PATH}"
 done
 
-rm -fr /var/symfony/cache
-
 # Release-builds has a populated vendor-folder, so no need to do an install.
 if [[ ! -f /var/www/admin/.release ]]; then
   echo "Live source mount - doing a composer install"
@@ -37,11 +35,20 @@ else
   echo "Release-build detected, skipping composer install"
 fi
 
-gosu www-data /opt/development/scripts/console.sh doctrine:migrations:migrate --no-interaction
-gosu www-data /opt/development/scripts/console.sh os2display:core:templates:load
-gosu www-data /opt/development/scripts/console.sh doctrine:query:sql "UPDATE ik_screen_templates SET enabled=1;"
-gosu www-data /opt/development/scripts/console.sh doctrine:query:sql "UPDATE ik_slide_templates SET enabled=1;"
-gosu www-data /opt/development/scripts/console.sh fos:user:create admin admin@example.com admin --super-admin || true
+# Import upload backup.
+UPLOADS_IMPORT_FILE=/opt/development/state-import/uploads.tar.gz
+if [[ -f "${UPLOADS_IMPORT_FILE}" ]]; then
+  echo "* Importing file state"
+  rm -fr web/uploads/*
+  tar -C web/uploads -zx --strip-components=1 -f "${UPLOADS_IMPORT_FILE}"
+  ensure_writable web/uploads
+fi
+
+gosu www-data bin/console doctrine:migrations:migrate --no-interaction
+gosu www-data bin/console os2display:core:templates:load
+gosu www-data bin/console doctrine:query:sql "UPDATE ik_screen_templates SET enabled=1;"
+gosu www-data bin/console doctrine:query:sql "UPDATE ik_slide_templates SET enabled=1;"
+gosu www-data bin/console fos:user:create admin admin@example.com admin --super-admin || true
 
 # TODO - only do this if the indexes has not already been enabled.
 # Initialize the search index
@@ -115,3 +122,6 @@ do
     initialise_type $TYPE
 )
 done
+
+# In case the database contained data.
+gosu www-data bin/console os2display:core:reindex
