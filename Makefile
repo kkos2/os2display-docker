@@ -84,12 +84,15 @@ load-templates: ## Reload templates
 	docker-compose exec admin-php chown -R www-data:www-data /var/symfony
 
 cc: ## Clear the admin cache
-	docker-compose exec admin-php bin/console cache:clear
+	docker-compose exec admin-php gosu www-data bin/console cache:clear
 #	docker-compose exec admin-php chown -R www-data:www-data app/cache
 	docker-compose exec admin-php chown -R www-data:www-data /var/symfony
 
 xdebug: ## Start xdebug for the admin-php container.
 	docker-compose exec admin-php xdebug-start
+
+update-composer-lock: ## Update composer.lock, eg. after a patch has been added.
+	docker-compose run -e COMPOSER_MEMORY_LIMIT=-1 admin-php composer update --lock --no-scripts
 
 # =============================================================================
 # HELPERS

@@ -1,9 +1,8 @@
 # Infrastructure for Os2Display
+A Docker setup for developing os2display.
 
-The repository contains a Docker setup for developing os2display.
-
-## Project-specific customizations
-Clone this project, then customize `_variables.source`. You should at the very least update `ADMIN_REPOSITORY` and `ADMIN_REPOSITORY_BRANCH` to reference your `admin` fork.
+# Initial setup of os2display-docker
+Fork this repository from reload/os2display-docker, then customize `_variables.source`. You should at the very least update `ADMIN_REPOSITORY` and `ADMIN_REPOSITORY_BRANCH` to reference your `admin` fork.
 
 ## Changes to admin
 You must make the following changes to your `admin` fork to be compatible with the docker-setup.
@@ -33,22 +32,72 @@ Add a patch to support non-localhost elasticsearch (until https://github.com/os2
 }
 ```
 
-## Development
+# Using os2display-docker
 To get started you need the following:
 1. Install [Docker](https://docs.docker.com/install/)
 2. Install [Docker Compose](https://docs.docker.com/compose/install/)
-3. Install [Dory](https://github.com/FreedomBen/dory). - Something similiar will do. dnsmasq, or another project that can provide access to the containers via the `VIRTUAL_HOST` environments-specified in docker-compose.
-4. `dory up`
-5. `make clone-admin`
-6. `make reset-dev` or `make reset-dev-nfs` (see below)
-7. `make run-gulp`
+3. Install [Dory](https://github.com/FreedomBen/dory). - Something similar will do. dnsmasq, or another project that can provide access to the containers via the `VIRTUAL_HOST` environments-specified in docker-compose.
+
+## Initial setup
+1. Ensure Dory is running by running `dory up` - this is only necessary to do once, dory should keep running at least until you reboot your machine.
+2. Do an initial clone of the admin repository by running `make clone-admin`. This task requires that you have configured `_variables.source` during the initial fork of `os2display-docker`.
+
+## Development and testing
+You now ready to start developing and/or testing releases by following the steps below. When the reset is complete the site will be available at `https://admin.$DOCKER_BASE_DOMAIN.docker` (see _variables.source for the value of `$DOCKER_BASE_DOMAIN`).
+
+### Development
+1. Run `make reset-dev` or `make reset-dev-nfs` (see NFS section below)
+2. Run `make run-gulp` to do an initial build of assets. Re-run this task every time you modify any js/css that needs building.
+
+### Testing
+When testing, ensure you you've updated `ADMIN_RELEASE_TAG` in _variables.source, then run `make reset-release`
 
 When you have made changes to slides or screens you might want to run `make run-gulp`
 again.
 
-After reset the site will be available at https://admin.kff-os2display.docker
+## Development issues
+### Changes to core and third-party bundles.
+Changes should be delivered via patches (see [Changes to admin](#changes-to-admin)). The patch should be placed in admin/patches.
 
-## NFS
+You develop the patch by making changes to the downloaded bundle in `admin/vendor/os2display/<bundlename>`. This can be eased by cloning the bundle from https://github.com/os2display, checking out the correct version, and then moving the .git folder into the bundle.
+Eg.
+```bash
+git clone https://github.com/os2display/admin-bundle.git
+cd admin-bundle
+git checkout <some tag>
+mv .git /myproject/os2display-docker/development/admin/vendor/os2display/admin-bundle/
+```
+Implement your changes and then do a
+```bash
+cd /myproject/os2display-docker/development/admin/vendor/os2display/admin-bundle/
+git diff <some tag> HEAD > /myproject/os2display-docker/development/admin/patches/mypatch.patch
+```
+
+Add the patch to composer.json, remove the module (or move it to a temporary location if you want to keep the workspace), and then do a clean `make reset-dev`/`make reset-dev-nfs`.
+
+Your patch should now be applied.
+When you are ready to commit, finish off by running
+```bash
+make update-composer-lock
+```
+To refresh the lock-file (as it references the patch).
+
+You should ideally do a fork of the repository in mention and open a pull-request with your change.
+
+### Recompiling assets for bundles
+You may need to rebuild assets that you've modified in bundles. For this you can use the same approach as the one used for building admin assets:
+```bash
+cd /myproject/os2display-docker/development/admin/vendor/os2display/some-bundle
+# Consult the gulp-file for actual targes, and replace yarn for npm if
+# npm is used.
+docker run \
+  -v $(PWD):/app \
+  -w /app \
+  node:8.16.0-slim \
+  sh -c "yarn && yarn run gulp js assets sass"
+```
+
+### NFS
 Docker For Mac is notoriously slow when it comes to "bind" mounts. In order to support this better the setup supports mounting the code-base via NFS with two caveats.
 
 1. A compatible /etc/exports has to be set up in advance, eg. sees https://forums.docker.com/t/nfs-native-support/48531
@@ -60,11 +109,10 @@ The setup is currently unable to auto-detect whether to use NFS, so instead you 
 make reset-dev-nfs
 ```
 
-## Testing a release
-```bash
-make reset-release
-```
+## Other resources
+* See the Makefile for additional tasks.
+* See https://github.com/reload/os2display-k8s/tree/master/documentation for general documentation on the docker-based hosting of os2display
+* see https://github.com/os2display/docs for the official project documentation.
 
-## Other
-See Makefile and the [documentation](documentation) for more details or feel
-free to contact the authors for more details.
+Or feel free to contact the authors for more details.
+
