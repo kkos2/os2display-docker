@@ -31,6 +31,16 @@ reset-release: _dc_compile_release _reset-container-state _show_notes ## Release
 up:  ## Take the whole environment up without altering the existing state of the containers.
 	docker-compose up -d --remove-orphans
 
+down:
+# docker-compose has a nasty tendency to leave containers hanging around
+# just at bit to long which results in an error as a volume that is still
+# in use is attempted deleted. To compensate for this we run docker-compose
+# down twice and only exit if the second attempt fails.
+# This will result in some warnings the second time around that can safely
+# be ignored.
+	docker-compose down -v --remove-orphans || true
+	docker-compose down -v --remove-orphans
+
 stop: ## Stop all containers without altering anything else.
 	docker-compose stop
 
@@ -63,6 +73,7 @@ clone-admin: ## Do an initial clone of the admin repo.
 
 run-gulp: # Run gulp
 	docker run \
+		-ti \
 		-v $(PWD)/development/admin:/app \
 		-w /app/src/kkos2-display-bundle \
 		node:8.16.0-slim \
@@ -94,21 +105,21 @@ xdebug: ## Start xdebug for the admin-php container.
 update-composer-lock: ## Update composer.lock, eg. after a patch has been added.
 	docker-compose run -e COMPOSER_MEMORY_LIMIT=-1 admin-php composer update --lock --no-scripts
 
+fetch-state: ## Fetch state from a live environment specified via STATE_FETCH_NAMESPACE
+	kubectl config current-context
+	@echo "Is the context above correct? [y/N] " && read ans && [ $${ans:-N} == y ]
+	kubectl -n ${STATE_FETCH_NAMESPACE} exec $(shell kubectl get pods -l app=admin-db -o jsonpath="{.items[0].metadata.name}") -- sh -c "mysqldump -u root -proot os2display | gzip" > development/state-import/admin.sql.gz
+	kubectl -n ${STATE_FETCH_NAMESPACE} cp -c admin-php $(shell kubectl get pods -l app=admin -o jsonpath="{.items[0].metadata.name}"):/var/www/admin/web/uploads development/state-import/uploads
+	tar -vC development/state-import -czf development/state-import/uploads.tar.gz uploads
+	rm -fr development/state-import/uploads
+
 # =============================================================================
 # HELPERS
 # =============================================================================
 # These targets are usually not run manually.
 
 # Fetch and replace updated containers and db-dump images and run composer install.
-_reset-container-state:
-# docker-compose has a nasty tendency to leave containers hanging around
-# just at bit to long which results in an error as a volume that is still
-# in use is attempted deleted. To compensate for this we run docker-compose
-# down twice and only exit if the second attempt fails.
-# This will result in some warnings the second time around that can safely
-# be ignored.
-	docker-compose down -v --remove-orphans || true
-	docker-compose down -v --remove-orphans
+_reset-container-state: down
 	docker-compose up -d
 # TODO - when resetting a release we should wait for admin_php to copy its files
 #        before invoking _docker-init-environment. Until then we leave a sleep
