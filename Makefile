@@ -57,7 +57,7 @@ docs: $(diagrams) ## Build plantuml-diagrams for the documentation
 $(diagrams): documentation/diagrams/%.png : documentation/diagrams/%.plantuml
 	@echo '$< -> $@'
 	rm -f $@
-	cat $< | docker run --rm -i think/plantuml -tpng > $@
+	cat $< | docker run --rm -i miy4/plantuml -tpng > $@
 
 clone-admin: ## Do an initial clone of the admin repo.
 	git clone --branch=$(ADMIN_REPOSITORY_BRANCH) $(ADMIN_REPOSITORY) development/admin
