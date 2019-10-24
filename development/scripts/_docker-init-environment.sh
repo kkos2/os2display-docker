@@ -61,10 +61,19 @@ if [[ -f "${UPLOADS_IMPORT_FILE}" ]]; then
 fi
 
 gosu www-data bin/console doctrine:migrations:migrate --no-interaction
+# Read in all templates
 gosu www-data bin/console os2display:core:templates:load
+# Enable all screen and slide-templates
 gosu www-data bin/console doctrine:query:sql "UPDATE ik_screen_templates SET enabled=1;"
 gosu www-data bin/console doctrine:query:sql "UPDATE ik_slide_templates SET enabled=1;"
+
+# Create the admin, this will only work if the admin does not already exist.
+# We handle the remaining cases below.
 gosu www-data bin/console fos:user:create admin admin@example.com admin --super-admin || true
+# The user might have been renamed, so rename it back to admin
+gosu www-data bin/console doctrine:query:sql 'update fos_user_user set username = "admin", username_canonical = "admin" where email = "admin@example.com"'
+# And make sure the password gets updated as well
+gosu www-data bin/console fos:user:change-password admin admin || true
 
 # TODO - only do this if the indexes has not already been enabled.
 # Initialize the search index
