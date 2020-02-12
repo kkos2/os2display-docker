@@ -5,7 +5,7 @@ PROJECT_IMAGE_REPOSITORY=eu.gcr.io/os2display-kff
 DOCKER_BASE_DOMAIN=kff-os2display.docker
 
 # Repository and branch that should be used when cloning admin.
-ADMIN_REPOSITORY=git@github.com:kkos2/os2display-admin.git
+ADMIN_REPOSITORY=https://github.com/kkos2/os2display-admin.git
 ADMIN_REPOSITORY_BRANCH=kk-develop
 
 # Support images that does not contain any project-code, thus we track eg. 
