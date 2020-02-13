@@ -91,6 +91,9 @@ cc: ## Clear the admin cache
 xdebug: ## Start xdebug for the admin-php container.
 	docker-compose exec admin-php xdebug-start
 
+baseline: ## Setup a baseline test data
+	docker-compose exec admin-php bin/console kff:baseline-channels
+
 # =============================================================================
 # HELPERS
 # =============================================================================
@@ -130,5 +133,5 @@ _show_notes:
 	$(info - Screen: https://screen.$(DOCKER_BASE_DOMAIN))
 	$(info - Search: https://search.$(DOCKER_BASE_DOMAIN))
 
-.PHONY: help reset-dev reset-dev-nfs reset-release up stop logs clone-admin run-cron load-templates cc xdebug configure-kubectl _reset-container-state _dc_compile_release _dc_compile_dev _show_notes
+.PHONY: help reset-dev reset-dev-nfs reset-release up stop logs clone-admin run-cron load-templates cc xdebug baseline configure-kubectl _reset-container-state _dc_compile_release _dc_compile_dev _show_notes
 
