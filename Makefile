@@ -22,13 +22,13 @@ help: ## Display a list of the public targets
 # targets), then strip the hash and print.
 	@grep -E -h "^\w.*:.*##" $(MAKEFILE_LIST) | sed -e 's/\(.*\):.*##\(.*\)/\1	\2/'
 
-reset-dev: _dc_compile_dev _reset-container-state _dc_init_environment _show_notes ## Development-mode: stop all containers, reset their state and start up again.
+reset-dev: _dc_compile_dev _reset-container-state _dc_init_container_state _show_notes ## Development-mode: stop all containers, reset their state and start up again.
 
-reset-dev-nfs: _dc_compile_dev_nfs _reset-container-state _dc_init_environment _show_notes ## Development-mode with NFS: stop all containers, reset their state and start up again.
+reset-dev-nfs: _dc_compile_dev_nfs _reset-container-state _dc_init_container_state _show_notes ## Development-mode with NFS: stop all containers, reset their state and start up again.
 
-reset-release: _dc_compile_release _reset-container-state _dc_init_environment _show_notes ## Release-test mode: stop all containers, reset their state and start up again.
+reset-release: _dc_compile_release _reset-container-state _dc_init_container_state _show_notes ## Release-test mode: stop all containers, reset their state and start up again.
 
-ci-init: _dc_compile_dev _dc_init_environment ## CI run mode: Init the environment.
+ci-init: _dc_compile_dev _dc_init_container_state ## CI run mode: Init the environment.
 
 up:  ## Take the whole environment up without altering the existing state of the containers.
 	docker-compose up -d --remove-orphans
@@ -101,10 +101,14 @@ baseline: ## Setup a baseline test data
 # =============================================================================
 # These targets are usually not run manually.
 
-_dc_init_environment:
+_dc_init_container_state:
+	docker-compose up -d
+# TODO - when resetting a release we should wait for admin_php to copy its files
+#        before invoking _docker-init-environment. Until then we leave a sleep
+#        here
+	sleep 5
 	docker-compose exec admin-php bash -c "wait-for-it -t 60 admin-db:3306 && wait-for-it -t 60 elasticsearch:9200 && /opt/development/scripts/_docker-init-environment.sh"
 
-# Fetch and replace updated containers and db-dump images and run composer install.
 _reset-container-state:
 # docker-compose has a nasty tendency to leave containers hanging around
 # just at bit to long which results in an error as a volume that is still
@@ -114,11 +118,6 @@ _reset-container-state:
 # be ignored.
 	docker-compose down -v --remove-orphans || true
 	docker-compose down -v --remove-orphans
-	docker-compose up -d
-# TODO - when resetting a release we should wait for admin_php to copy its files
-#        before invoking _docker-init-environment. Until then we leave a sleep
-#        here
-	sleep 5
 
 _dc_compile_release:
 	docker-compose -f docker-compose.common.yml -f docker-compose.release.yml config > docker-compose.yml
