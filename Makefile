@@ -81,20 +81,20 @@ run-cron: ## Run Cron
 	docker-compose -f docker-compose.yml $(dc_override) run --rm admin-cron run_os2display_cron.sh
 
 load-templates: ## Reload templates
-	docker-compose exec admin-php bin/console os2display:core:templates:load
-#	docker-compose exec admin-php chown -R www-data:www-data app/cache
-	docker-compose exec admin-php chown -R www-data:www-data /var/symfony
+	docker-compose exec -T admin-php bin/console os2display:core:templates:load
+#	docker-compose exec -T admin-php chown -R www-data:www-data app/cache
+	docker-compose exec -T admin-php chown -R www-data:www-data /var/symfony
 
 cc: ## Clear the admin cache
-	docker-compose exec admin-php bin/console cache:clear
-#	docker-compose exec admin-php chown -R www-data:www-data app/cache
-	docker-compose exec admin-php chown -R www-data:www-data /var/symfony
+	docker-compose exec -T admin-php bin/console cache:clear
+#	docker-compose exec -T admin-php chown -R www-data:www-data app/cache
+	docker-compose exec -T admin-php chown -R www-data:www-data /var/symfony
 
 xdebug: ## Start xdebug for the admin-php container.
-	docker-compose exec admin-php xdebug-start
+	docker-compose exec -T admin-php xdebug-start
 
 baseline: ## Setup a baseline test data
-	docker-compose exec admin-php bin/console kff:baseline-channels
+	docker-compose exec -T admin-php bin/console kff:baseline-channels
 
 # =============================================================================
 # HELPERS
