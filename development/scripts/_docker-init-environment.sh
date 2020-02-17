@@ -61,7 +61,7 @@ if [[ -f "${UPLOADS_IMPORT_FILE}" ]]; then
 fi
 
 gosu www-data bin/console doctrine:migrations:migrate --no-interaction
-gosu www-data bin/console os2display:core:templates:load
+bin/console os2display:core:templates:load
 gosu www-data bin/console doctrine:query:sql "UPDATE ik_screen_templates SET enabled=1;"
 gosu www-data bin/console doctrine:query:sql "UPDATE ik_slide_templates SET enabled=1;"
 gosu www-data bin/console fos:user:create admin admin@example.com admin --super-admin || true
