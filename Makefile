@@ -24,8 +24,6 @@ help: ## Display a list of the public targets
 
 reset-dev: _dc_compile_dev _reset-container-state _dc_init_container_state _show_notes ## Development-mode: stop all containers, reset their state and start up again.
 
-reset-ci: _dc_compile_ _reset-container-state _dc_init_container_state _show_notes ## Development-mode: stop all containers, reset their state and start up again.
-
 reset-dev-nfs: _dc_compile_dev_nfs _reset-container-state _dc_init_container_state _show_notes ## Development-mode with NFS: stop all containers, reset their state and start up again.
 
 reset-release: _dc_compile_release _reset-container-state _dc_init_container_state _show_notes ## Release-test mode: stop all containers, reset their state and start up again.
@@ -129,6 +127,7 @@ _dc_compile_dev:
 
 _dc_compile_ci:
 	docker-compose -f docker-compose.common.yml -f docker-compose.ci.yml config > docker-compose.yml
+	cat docker-compose.yml
 
 _dc_compile_dev_nfs:
 	docker-compose -f docker-compose.common.yml -f docker-compose.development.yml -f docker-compose.development.nfs.yml $(dc_override) config > docker-compose.yml
