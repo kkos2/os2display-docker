@@ -113,7 +113,7 @@ _reset-container-state:
 # TODO - when resetting a release we should wait for admin_php to copy its files
 #        before invoking _docker-init-environment. Until then we leave a sleep
 #        here
-	sleep 5
+	sleep 10
 	docker-compose exec admin-php bash -c "wait-for-it -t 60 admin-db:3306 && wait-for-it -t 60 elasticsearch:9200 && /opt/development/scripts/_docker-init-environment.sh"
 
 _dc_compile_release:
