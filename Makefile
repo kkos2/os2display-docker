@@ -127,7 +127,7 @@ _dc_compile_dev:
 
 _dc_compile_ci:
 	docker-compose -f docker-compose.common.yml -f docker-compose.ci.yml config > docker-compose.yml
-	cat docker-compose.yml
+	pwd
 
 _dc_compile_dev_nfs:
 	docker-compose -f docker-compose.common.yml -f docker-compose.development.yml -f docker-compose.development.nfs.yml $(dc_override) config > docker-compose.yml
