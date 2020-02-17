@@ -30,7 +30,7 @@ reset-dev-nfs: _dc_compile_dev_nfs _reset-container-state _dc_init_container_sta
 
 reset-release: _dc_compile_release _reset-container-state _dc_init_container_state _show_notes ## Release-test mode: stop all containers, reset their state and start up again.
 
-ci-init: _dc_compile_dev _dc_init_container_state ## CI run mode: Init the environment.
+ci-init: _dc_compile_ci _dc_init_container_state ## CI run mode: Init the environment.
 
 up:  ## Take the whole environment up without altering the existing state of the containers.
 	docker-compose up -d --remove-orphans
