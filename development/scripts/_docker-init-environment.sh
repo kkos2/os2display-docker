@@ -36,7 +36,7 @@ if [[ ! -f /var/www/admin/.release ]]; then
   chown www-data -R ../.composer
   mkdir -p bin
   chown www-data -R bin
-  mkdir -p web
+  mkdir -p web/bundles
   chown www-data -R web
   mkdir -p vendor
   chown www-data -R vendor
@@ -45,10 +45,8 @@ if [[ ! -f /var/www/admin/.release ]]; then
   mkdir -p var
   chown www-data -R var
   chown www-data app/config/parameters.yml
-  ensure_writable web/bundles
 
   gosu www-data composer install
-  ls -lah web/bundles
 else
   echo "Release-build detected, skipping composer install"
 fi
