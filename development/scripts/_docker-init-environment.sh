@@ -45,6 +45,8 @@ if [[ ! -f /var/www/admin/.release ]]; then
   mkdir -p var
   chown www-data -R var
   chown www-data app/config/parameters.yml
+  ensure_writable web/bundles
+
 
   gosu www-data composer install
 else
