@@ -36,8 +36,10 @@ if [[ ! -f /var/www/admin/.release ]]; then
   chown www-data -R ../.composer
   mkdir -p bin
   chown www-data -R bin
-  mkdir -p web/bundles
+  mkdir -p web
   chown www-data -R web
+  mkdir -p web/bundles
+  chown www-data -R web/bundles
   mkdir -p vendor
   chown www-data -R vendor
   touch composer.lock
