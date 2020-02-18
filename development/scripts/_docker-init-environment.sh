@@ -45,7 +45,7 @@ if [[ ! -f /var/www/admin/.release ]]; then
   mkdir -p var
   chown www-data -R var
   chown www-data app/config/parameters.yml
-
+  ls -lah web
   gosu www-data composer install
 else
   echo "Release-build detected, skipping composer install"
