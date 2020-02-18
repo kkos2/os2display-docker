@@ -47,8 +47,8 @@ if [[ ! -f /var/www/admin/.release ]]; then
   chown www-data app/config/parameters.yml
   ensure_writable web/bundles
 
-
   gosu www-data composer install
+  ls -lah web/bundles
 else
   echo "Release-build detected, skipping composer install"
 fi
