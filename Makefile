@@ -22,13 +22,11 @@ help: ## Display a list of the public targets
 # targets), then strip the hash and print.
 	@grep -E -h "^\w.*:.*##" $(MAKEFILE_LIST) | sed -e 's/\(.*\):.*##\(.*\)/\1	\2/'
 
-reset-dev: _dc_compile_dev _reset-container-state _dc_init_container_state _show_notes ## Development-mode: stop all containers, reset their state and start up again.
+reset-dev: _dc_compile_dev _reset-container-state _show_notes ## Development-mode: stop all containers, reset their state and start up again.
 
-reset-dev-nfs: _dc_compile_dev_nfs _reset-container-state _dc_init_container_state _show_notes ## Development-mode with NFS: stop all containers, reset their state and start up again.
+reset-dev-nfs: _dc_compile_dev_nfs _reset-container-state _show_notes ## Development-mode with NFS: stop all containers, reset their state and start up again.
 
-reset-release: _dc_compile_release _reset-container-state _dc_init_container_state _show_notes ## Release-test mode: stop all containers, reset their state and start up again.
-
-ci-init: _dc_compile_ci _dc_init_container_state ## CI run mode: Init the environment.
+reset-release: _dc_compile_release _reset-container-state _show_notes ## Release-test mode: stop all containers, reset their state and start up again.
 
 up:  ## Take the whole environment up without altering the existing state of the containers.
 	docker-compose up -d --remove-orphans
@@ -81,34 +79,24 @@ run-cron: ## Run Cron
 	docker-compose -f docker-compose.yml $(dc_override) run --rm admin-cron run_os2display_cron.sh
 
 load-templates: ## Reload templates
-	docker-compose exec -T admin-php bin/console os2display:core:templates:load
-#	docker-compose exec -T admin-php chown -R www-data:www-data app/cache
-	docker-compose exec -T admin-php chown -R www-data:www-data /var/symfony
+	docker-compose exec admin-php bin/console os2display:core:templates:load
+#	docker-compose exec admin-php chown -R www-data:www-data app/cache
+	docker-compose exec admin-php chown -R www-data:www-data /var/symfony
 
 cc: ## Clear the admin cache
-	docker-compose exec -T admin-php bin/console cache:clear
-#	docker-compose exec -T admin-php chown -R www-data:www-data app/cache
-	docker-compose exec -T admin-php chown -R www-data:www-data /var/symfony
+	docker-compose exec admin-php bin/console cache:clear
+#	docker-compose exec admin-php chown -R www-data:www-data app/cache
+	docker-compose exec admin-php chown -R www-data:www-data /var/symfony
 
 xdebug: ## Start xdebug for the admin-php container.
-	docker-compose exec -T admin-php xdebug-start
-
-baseline: ## Setup a baseline test data
-	docker-compose exec -T admin-php bin/console kff:baseline-channels
+	docker-compose exec admin-php xdebug-start
 
 # =============================================================================
 # HELPERS
 # =============================================================================
 # These targets are usually not run manually.
 
-_dc_init_container_state:
-	docker-compose up -d
-# TODO - when resetting a release we should wait for admin_php to copy its files
-#        before invoking _docker-init-environment. Until then we leave a sleep
-#        here
-	sleep 5
-	docker-compose exec -T admin-php bash -c "export TERM=xterm && wait-for-it -t 60 admin-db:3306 && wait-for-it -t 60 elasticsearch:9200 && /opt/development/scripts/_docker-init-environment.sh"
-
+# Fetch and replace updated containers and db-dump images and run composer install.
 _reset-container-state:
 # docker-compose has a nasty tendency to leave containers hanging around
 # just at bit to long which results in an error as a volume that is still
@@ -118,16 +106,18 @@ _reset-container-state:
 # be ignored.
 	docker-compose down -v --remove-orphans || true
 	docker-compose down -v --remove-orphans
+	docker-compose up -d
+# TODO - when resetting a release we should wait for admin_php to copy its files
+#        before invoking _docker-init-environment. Until then we leave a sleep
+#        here
+	sleep 5
+	docker-compose exec -T admin-php bash -c "export TERM=xterm && wait-for-it -t 60 admin-db:3306 && wait-for-it -t 60 elasticsearch:9200 && /opt/development/scripts/_docker-init-environment.sh"
 
 _dc_compile_release:
 	docker-compose -f docker-compose.common.yml -f docker-compose.release.yml config > docker-compose.yml
 
 _dc_compile_dev:
 	docker-compose -f docker-compose.common.yml -f docker-compose.development.yml config > docker-compose.yml
-
-_dc_compile_ci:
-	docker-compose -f docker-compose.common.yml -f docker-compose.ci.yml config > docker-compose.yml
-	pwd
 
 _dc_compile_dev_nfs:
 	docker-compose -f docker-compose.common.yml -f docker-compose.development.yml -f docker-compose.development.nfs.yml $(dc_override) config > docker-compose.yml
@@ -140,5 +130,5 @@ _show_notes:
 	$(info - Screen: https://screen.$(DOCKER_BASE_DOMAIN))
 	$(info - Search: https://search.$(DOCKER_BASE_DOMAIN))
 
-.PHONY: help reset-dev reset-dev-nfs reset-release up stop logs clone-admin run-cron load-templates cc xdebug baseline configure-kubectl _reset-container-state _dc_compile_release _dc_compile_dev _show_notes
+.PHONY: help reset-dev reset-dev-nfs reset-release up stop logs clone-admin run-cron load-templates cc xdebug configure-kubectl _reset-container-state _dc_compile_release _dc_compile_dev _show_notes
 
