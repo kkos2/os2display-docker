@@ -9,13 +9,11 @@ services:
 
   admin-php:
     environment:
-      PHP_IDE_CONFIG: "serverName=admin.${DOCKER_BASE_DOMAIN}"
       SYMFONY_ENV: "dev"
       SYMFONY_DEBUG: "1"
 
   admin-cron:
     environment:
-      PHP_IDE_CONFIG: "serverName=cron.${DOCKER_BASE_DOMAIN}"
       SYMFONY_ENV: "dev"
       SYMFONY_DEBUG: "1"
 
@@ -23,5 +21,5 @@ volumes:
   admin-release:
     driver_opts:
       type: none
-      device: $PWD/development
+      device: $GITHUB_WORKSPACE/development
       o: bind
