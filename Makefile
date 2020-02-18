@@ -107,7 +107,7 @@ _reset-container-state:
 	docker-compose down -v --remove-orphans || true
 	docker-compose down -v --remove-orphans
 	docker-compose up -d
-	docker-compose exec -T admin-php bash -c "ls -lah web/bundles"
+	docker-compose exec -T admin-php bash -c "ls -lah web"
 
 # TODO - when resetting a release we should wait for admin_php to copy its files
 #        before invoking _docker-init-environment. Until then we leave a sleep
