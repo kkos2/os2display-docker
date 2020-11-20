@@ -46,3 +46,6 @@ REDIS_BUILD_TAG=reload-0.1.0
 # run. It is also used by docker-compose when in release mode (see reset-release
 # in the Makefile).
 ADMIN_RELEASE_TAG=kk-develop-2924
+
+# The kubernetes namespace we should use when fetching state.
+STATE_FETCH_NAMESPACE=os2display-prod

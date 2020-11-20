@@ -2,7 +2,11 @@
 
 ' Define external actors
 actor actor_admin as "Administrator"
-actor actor_display as "Display"
+collections actor_display as "Display"
+
+' Define external services
+cloud external_multisite as "External service: KK Multisite"  #LightGray
+cloud external_twentythree as "External service: 23 video" #LightGray
 
 ' Define Services
 cloud service_elasticsearch as "Service: elasticsearch"
@@ -29,6 +33,7 @@ together {
     together {
       artifact admin_nginx as "admin-nginx"
       artifact admin_php as "admin-php"
+      control admin_cron as "admin-cron"
     }
     artifact admin_release as "admin-release"
 
@@ -37,13 +42,13 @@ together {
   }
 
   frame deployment_admin_db as "deployment: admin-db" {
-    artifact mariadb as "mariadb:10.3"
+    database mariadb as "mariadb:10.3"
   }
 }
 
 together {
   frame deployment_elasticsearch as "deployment: elasticsearch" {
-    artifact elasticsearch
+    database elasticsearch
   }
 
   frame deployment_search as "deployment: search" {
@@ -53,7 +58,7 @@ together {
 
 together {
   frame deployment_redis as "deployment: redis" {
-    artifact redis
+    database redis
   }
 
   frame deployment_middleware as "deployment: middleware" {
@@ -69,6 +74,7 @@ frame deployment_screen as "deployment: screen" {
 admin_release -d- storage_release_src
 admin_nginx -d- storage_release_src
 admin_php -d- storage_release_src
+admin_cron -d- storage_release_src
 admin_php --- storage_uploads
 mariadb --- storage_datadir
 elasticsearch --- storage_esdata
@@ -81,6 +87,12 @@ service_elasticsearch -d--> elasticsearch
 service_admin_db -d--> mariadb
 service_redis -d--> redis
 service_search_node -d--> search_node
+
+' Connect external services
+external_twentythree -l--> actor_display
+external_twentythree <-l-- actor_display
+external_multisite <-u-- admin_cron
+external_multisite -u--> admin_cron
 
 ' Inter-container communication
 admin_php -u--> service_admin_db

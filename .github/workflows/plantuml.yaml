@@ -1,0 +1,25 @@
+on:
+  pull_request:
+    paths:
+      - 'documentation/**/*.puml'
+      - '.github/workflows/plantuml.yaml'
+
+name: PlantUML
+jobs:
+  generate_images:
+    name: Update images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Generate images from diagrams
+        uses: docker://miy4/plantuml
+        with:
+          args: "documentation/**/*.puml -tsvg"
+      - name: Commit updated diagram images
+        uses: EndBug/add-and-commit@v2.1.0
+        with:
+          message: Update PlantUML diagram images
+          path: "documentation"
+          pattern: "*.svg"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
