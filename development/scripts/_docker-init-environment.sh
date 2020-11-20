@@ -9,7 +9,7 @@ cd /var/www/admin
 # Set ownership and permissions if we don't have write-permission.
 # We do this a bit more careful in order to support the situation where the
 # codebase is mounted via nfs that will show a "wrong" ownership, still allow
-# us to write, but will reject an attempt to change permission. In this 
+# us to write, but will reject an attempt to change permission. In this
 # situation it is important to actually test whether we can write, and then
 # skip the chown/chmod alltogether if we can.
 function ensure_writable {
@@ -23,9 +23,14 @@ function ensure_writable {
   fi
 }
 
-for TEST_PATH in web/uploads web/uploads/media /var/symfony; do
+for TEST_PATH in vendor var bin web/bundles /var/symfony app/config web/uploads web/uploads/media; do
   ensure_writable "${TEST_PATH}"
 done
+
+# Shallow chown of web.
+if ! gosu www-data test -w "web"; then
+	  chown www-data:www-data web
+fi
 
 # Release-builds has a populated vendor-folder, so no need to do an install.
 if [[ ! -f /var/www/admin/.release ]]; then
