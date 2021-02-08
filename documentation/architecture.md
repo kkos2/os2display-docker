@@ -5,7 +5,7 @@ Base-images are introduced where serveral images requires the same functionallit
 ### Image hierachy
 The following diagram depicts how the images are related during build.
 
-![](./diagrams/image-hierarchy.png)
+![](./diagrams/image-hierarchy.svg)
 
 #### phusion-baseimage
 Phusion Baseimage that acts as the ultimate base for all of our images. The image is based on ubuntu 18.04. See https://github.com/phusion/baseimage-docker for details.
@@ -53,5 +53,5 @@ Redis server.
 ## Kubernetes
 The following diagram depicts the kubernetes objects used to host a single
 OS2display environment.
-![](./diagrams/kubernetes-architecture.png)
+![](./diagrams/kubernetes-architecture.svg)
 
