@@ -17,8 +17,9 @@ You now ready to start developing and/or testing releases by following the steps
 1. Run `make reset-dev` or `make reset-dev-nfs` (see NFS section below)
 2. Run `make run-gulp` to do an initial build of assets. Re-run this task every time you modify any js/css that needs building, eg. any changes to slide/screen templates.
 
-## Building a release
+## Build and deploy
 The kff os2display project auto-builds releases for each push to the `os2display-admin` repository (see the `os2display-admin/cloudbuild` directory). Each successfully built docker-image is published to `eu.gcr.io/os2display-kff/admin-release` and a tag matching the release is pushed to the `os2display-admin` repo. You can follow the build via https://console.cloud.google.com/cloud-build/builds?project=os2display-kff
+
 Consult https://github.com/kkos2/os2display-k8s-environments for how to deploy the release to an environment.
 
 ## Testing a release
