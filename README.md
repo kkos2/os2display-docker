@@ -19,8 +19,6 @@ You now ready to start developing and/or testing releases by following the steps
 
 ## Building a release
 The kff os2display project auto-builds releases for each push to the `os2display-admin` repository (see the `os2display-admin/cloudbuild` directory). Each successfully built docker-image is published to `eu.gcr.io/os2display-kff/admin-release` and a tag matching the release is pushed to the `os2display-admin` repo. You can follow the build via https://console.cloud.google.com/cloud-build/builds?project=os2display-kff
-<<<<<<< Updated upstream
-
 Consult https://github.com/kkos2/os2display-k8s-environments for how to deploy the release to an environment.
 
 ## Testing a release
@@ -28,16 +26,6 @@ You can test a release locally before deploying it by updating `ADMIN_RELEASE_TA
 
 Consider committing the change to `_variables.source` if the release is deployed to prod.
 
-=======
-
-Consult https://github.com/kkos2/os2display-k8s-environments for how to deploy the release to an environment.
-
-## Testing a release
-You can test a release locally before deploying it by updating `ADMIN_RELEASE_TAG` in _variables.source, then run `make reset-release`.
-
-Consider committing the change to `_variables.source` if the release is deployed to prod.
-
->>>>>>> Stashed changes
 ## Changes to core and third-party bundles.
 Changes should be delivered via patches (see [Changes to admin](#changes-to-admin)). The patch should be placed in admin/patches.
 
